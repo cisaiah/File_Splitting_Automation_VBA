@@ -6,6 +6,7 @@ Sub Split_Spreadsheet()
     ' This is a macro to automate splitting an excel worksheet into different workbooks
     ' The macro will allow the user to select your split column
     ' The user can also select whether or not to hide the split column, activate filter buttons or freeze panes
+    ' Author: Chioma Isaiah
       
     Dim WBook As Workbook
     Dim WSheet As Worksheet
@@ -97,9 +98,6 @@ UserInput:
     
     'Clear any existing filter
     WSheet.AutoFilterMode = False
-    
-    'Sort the spreadsheet based on column to be split
-    SplitRange.Sort Key1:=SplitRange.Cells(1, 1), Order1:=xlAscending, Header:=xlYes
             
     'Define the split array, split row, and split column
     Set SplitRange = Range(SplitRange, Cells((SplitRange.End(xlDown).Row), SplitRange.Column))
@@ -183,7 +181,7 @@ UserInput:
             
             'Save the file as "Source FileName " + Cell content of the split column + ".xlsx"
             Application.EnableEvents = False
-                NewFile = WBPath & "\" & WBName & " - " & Replace(SplitArray(counter, 1), "/", " or ") & ".xlsx"
+                NewFile = Left(WBPath & "\" & WBName & " - " & Replace(SplitArray(counter, 1), "/", " or "), 213) & ".xlsx"
                 NewWB.SaveAs NewFile
                 NewWB.Close False
             Application.EnableEvents = True
