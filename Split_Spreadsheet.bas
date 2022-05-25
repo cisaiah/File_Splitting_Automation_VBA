@@ -20,6 +20,7 @@ Sub Split_Spreadsheet()
     Dim SplitRow As Integer
     Dim SplitRowHeight As Integer
     Dim SplitCol As Integer
+    Dim LastHeaderCell As String
     Dim SplitArray() As Variant
     Dim HideSplitColumn As String
     Dim FilterButton As String
@@ -95,15 +96,13 @@ UserInput:
     
     'Choose the first cell in case a user select multiple cells as split column header
     Set SplitRange = SplitRange.Cells(1, 1)
-    
-    'Clear any existing filter
-    WSheet.AutoFilterMode = False
-            
-    'Define the split array, split row, and split column
+               
+    'Define the split array, split row, split column, and the last cell of the header
     Set SplitRange = Range(SplitRange, Cells((SplitRange.End(xlDown).Row), SplitRange.Column))
         SplitRow = SplitRange.Row
         SplitCol = SplitRange.Column
         SplitRowHeight = SplitRange.Cells(1, 1).RowHeight
+        LastHeaderCell = Replace(Cells(SplitRow, Columns.Count).End(xlToLeft).Address, "$", "")
     
     'Determine the hidden columns. I will unhide them for the splitting process and re-hide them afterwards
     allhiddencols = ""
@@ -145,7 +144,7 @@ UserInput:
                 NewSH.Name = WSheet.Name
                 
             'Filter the data on the split column of the Spreadsheet
-            SplitRange.Cells(1, 1).AutoFilter Field:=SplitCol, Criteria1:=SplitArray(counter, 1)
+            WSheet.Range("A" & SplitRow & ":" & LastHeaderCell).AutoFilter Field:=SplitCol, Criteria1:=SplitArray(counter, 1)
             
             'Copy filtered/visible data and paste into new workbook created
             WSheet.UsedRange.SpecialCells(xlCellTypeVisible).Copy
@@ -181,7 +180,7 @@ UserInput:
             
             'Save the file as "Source FileName " + Cell content of the split column + ".xlsx"
             Application.EnableEvents = False
-                NewFile = Left(WBPath & "\" & WBName & " - " & Replace(SplitArray(counter, 1), "/", " or "), 213) & ".xlsx"
+                NewFile = WBPath & "\" & WBName & " - " & Replace(SplitArray(counter, 1), "/", " or ") & ".xlsx"
                 NewWB.SaveAs NewFile
                 NewWB.Close False
             Application.EnableEvents = True
